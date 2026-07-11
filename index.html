@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard TradingBot4H</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        canvas { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Andamento Portafoglio (BTC/USDT)</h1>
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script>
+        async function caricaDati() {
+            const risposta = await fetch('portafoglio.csv');
+            const testo = await risposta.text();
+            const righe = testo.trim().split('\n');
+            
+            const etichette = [];
+            const datiUSDT = [];
+            
+            righe.forEach(riga => {
+                const [data, usdt, btc] = riga.split(',');
+                etichette.push(data);
+                datiUSDT.push(parseFloat(usdt));
+            });
+
+            new Chart(document.getElementById('chart'), {
+                type: 'line',
+                data: {
+                    labels: etichette,
+                    datasets: [{
+                        label: 'Saldo USDT',
+                        data: datiUSDT,
+                        borderColor: '#2e7d32',
+                        fill: false
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+        caricaDati();
+    </script>
+</body>
+</html>
