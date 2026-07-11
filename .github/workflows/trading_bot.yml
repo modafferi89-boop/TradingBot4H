@@ -20,7 +20,7 @@ jobs:
       - name: Installazione librerie
         run: |
           pip install ccxt pandas python-dotenv yfinance
-          pip install pandas-ta
+          pip install git+https://github.com/twopirllc/pandas-ta.git@development
 
       - name: Esecuzione del bot
         env:
