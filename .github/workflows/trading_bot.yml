@@ -1,0 +1,38 @@
+name: trading_bot
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v3
+
+      - name: Configurazione Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Installazione librerie
+        run: |
+          pip install ccxt pandas python-dotenv
+
+      - name: Esecuzione del bot
+        env:
+          API_KEY_BINANCE: ${{ secrets.API_KEY_BINANCE }}
+          SECRET_KEY_BINANCE: ${{ secrets.SECRET_KEY_BINANCE }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python monitor_prudente_4h.py
+
+      - name: Commit e push dei risultati
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add portafoglio.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Aggiornamento portafoglio.csv" && git push)
